@@ -20,8 +20,8 @@
     <PackageTags>about error nag registration form dialog</PackageTags>
     <Description>Common forms and utility methods for WinForms including an About Box, Error Dialog, Nag Dialog, and Registration Dialog.</Description>
     <Authors>KellermanSoftware</Authors>
-    <Version>1.00</Version>
-    <AssemblyVersion>1.00.0.0</AssemblyVersion>
+    <Version>1.11</Version>
+    <AssemblyVersion>1.11.0.0</AssemblyVersion>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Company>Kellerman Software</Company>
     <Copyright>Copyright 2018 Kellerman Software</Copyright>
@@ -29,7 +29,7 @@
     <PackageProjectUrl>https://github.com/GregFinzer/KellermanSoftware-Common-Gui</PackageProjectUrl>
     <PackageIconUrl>http://www.kellermanstores.com/Content/images/NuGetIcon.png</PackageIconUrl>
     <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
-    <FileVersion>1.00.0.0</FileVersion>
+    <FileVersion>1.11.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -83,6 +83,21 @@
     <PackageReference Include="KellermanSoftware.Common" Version="1.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+	<Compile Update="frmAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
 
+	<Compile Update="frmErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
 
+	<Compile Update="frmNag.cs">
+      <SubType>Form</SubType>
+    </Compile>
+
+	<Compile Update="frmRegistration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+	</ItemGroup>
 </Project>
