@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace KellermanSoftware.Common.Gui
 {
     partial class frmRegistration
@@ -5,7 +8,7 @@ namespace KellermanSoftware.Common.Gui
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -125,12 +128,12 @@ namespace KellermanSoftware.Common.Gui
 
         #endregion
 
-        private System.Windows.Forms.Label lblUserName;
-        private System.Windows.Forms.Label lblLicenseKey;
-        private System.Windows.Forms.TextBox txtUserName;
-        private System.Windows.Forms.TextBox txtLicenseKey;
-        private System.Windows.Forms.ErrorProvider epValidation;
-        private System.Windows.Forms.Button btnOk;
-        private System.Windows.Forms.Button btnCancel;
+        private Label lblUserName;
+        private Label lblLicenseKey;
+        private TextBox txtUserName;
+        private TextBox txtLicenseKey;
+        private ErrorProvider epValidation;
+        private Button btnOk;
+        private Button btnCancel;
     }
 }

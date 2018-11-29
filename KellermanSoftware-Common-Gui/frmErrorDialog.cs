@@ -1,12 +1,13 @@
 
 #region Includes
+
 using System;
-using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
-using System.Data;
-using Microsoft.Win32;
+using Win32Mapi;
+
 #endregion
 
 namespace KellermanSoftware.Common.Gui
@@ -14,44 +15,44 @@ namespace KellermanSoftware.Common.Gui
 	/// <summary>
 	/// Form to display errors and send to technical support
 	/// </summary>
-	public class ErrorDialog : System.Windows.Forms.Form
+	public class ErrorDialog : Form
 	{
 		#region Class Variables		
-        ErrorInformation myErrorInformation = null;
+        ErrorInformation myErrorInformation;
 
 #if DEBUG
-		private bool mbShowDetails=true;
+		private bool showDetails=true;
 #else
-		private bool mbShowDetails=false;
+		private bool showDetails=false;
 #endif
 
 		#endregion
 
 		#region Windows Form Controls
-		private System.Windows.Forms.TextBox txtCulture;
-        private System.Windows.Forms.Label lblCulture;
-        private System.Windows.Forms.Button btnSendError;
-        private System.Windows.Forms.Button btnDontSend;
+		private TextBox txtCulture;
+        private Label lblCulture;
+        private Button btnSendError;
+        private Button btnDontSend;
 
-		private System.Windows.Forms.Label lblApplicationName;
-		private System.Windows.Forms.Label lblErrorType;
-		private System.Windows.Forms.Label lblProcedureName;
-		private System.Windows.Forms.Label lblClassName;
-		private System.Windows.Forms.TextBox txtApplicationName;
-		private System.Windows.Forms.TextBox txtProcedureName;
-        private System.Windows.Forms.TextBox txtClassName;
+		private Label lblApplicationName;
+		private Label lblErrorType;
+		private Label lblProcedureName;
+		private Label lblClassName;
+		private TextBox txtApplicationName;
+		private TextBox txtProcedureName;
+        private TextBox txtClassName;
         private IContainer components;
-        private System.Windows.Forms.TextBox txtAdditionalInfo;
-        private System.Windows.Forms.ErrorProvider epValidation;
-		private System.Windows.Forms.Label lblHeader;
-		private System.Windows.Forms.PictureBox picYield;
-		private System.Windows.Forms.Label lblStackTrace;
-        private System.Windows.Forms.GroupBox grpErrorDetails;
-		private System.Windows.Forms.Label lblAdditional;
-		private System.Windows.Forms.Label lblSorry;
-		private System.Windows.Forms.Label lblSteps;
-		private System.Windows.Forms.TextBox txtErrorMessage;
-        private System.Windows.Forms.Button btnShowDetails;
+        private TextBox txtAdditionalInfo;
+        private ErrorProvider epValidation;
+		private Label lblHeader;
+		private PictureBox picYield;
+		private Label lblStackTrace;
+        private GroupBox grpErrorDetails;
+		private Label lblAdditional;
+		private Label lblSorry;
+		private Label lblSteps;
+		private TextBox txtErrorMessage;
+        private Button btnShowDetails;
         private TableLayoutPanel pnlMain;
         private Panel pnlTitle;
         private Button btnNotepad;
@@ -62,7 +63,7 @@ namespace KellermanSoftware.Common.Gui
         private TableLayoutPanel pnlTableDetails;
         private Panel pnlSteps;
         private TextBox txtSteps;
-		private System.Windows.Forms.TextBox txtStack;
+		private TextBox txtStack;
 		#endregion
 
 		#region Constructor/Destructor
@@ -70,13 +71,6 @@ namespace KellermanSoftware.Common.Gui
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="e">The exception to display</param>
-		/// <param name="sApplicationName">The name of the application</param>
-		/// <param name="sClassName">The current executing class</param>
-		/// <param name="sProcedureName">The name of the current procedure</param>
-		/// <param name="dblVersion">The version number of the application</param>
-		/// <param name="sAdditionalInfo">Any additional information about the error</param>
-		/// <param name="sScreenShot">Path to a screen shot of what happened during the error</param>
         public ErrorDialog(ErrorInformation errorInfo)						
 		{
 			//
@@ -90,10 +84,6 @@ namespace KellermanSoftware.Common.Gui
                 GuiException.MessageBoxErrorHandler = true;
 
                 myErrorInformation = errorInfo;
-                //string mailLink = string.Empty;
-                //string systemInfo = string.Empty;
-                //string linkError = string.Empty;
-                //string filePath = string.Empty;
 
                 //No wait cursor
                 GuiUtility.Hourglass(false);
@@ -140,7 +130,7 @@ namespace KellermanSoftware.Common.Gui
             try
             {
                 string errorMessage = string.Empty;
-                this.ValidateChildren();
+                ValidateChildren();
 
                 errorMessage = epValidation.GetError(txtSteps);
 
@@ -150,10 +140,8 @@ namespace KellermanSoftware.Common.Gui
                     txtSteps.Focus();
                     return false;
                 }
-                else
-                {
-                    return true;
-                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -172,15 +160,14 @@ namespace KellermanSoftware.Common.Gui
 		{
 			try
 			{
-                System.Diagnostics.Process.Start(linkData);
+                Process.Start(linkData);
 				return true;
 			}
 			catch
 			{
-                if (linkData.Length > 10)
+			    if (linkData.Length > 10)
                     return TryLink(StringUtil.Left(linkData, linkData.Length - 10));
-				else
-					return false;
+			    return false;
 			}
 		}
 
@@ -196,7 +183,7 @@ namespace KellermanSoftware.Common.Gui
 
                 myErrorInformation.Steps = txtSteps.Text;
                 
-                Win32Mapi.Mapi myMapi = new Win32Mapi.Mapi();
+                Mapi myMapi = new Mapi();
                 myMapi.AddRecip("", myErrorInformation.SupportEmail,false);
                 myMapi.Attach(myErrorInformation.ScreenShot);
                 myMapi.Attach(myErrorInformation.EventLogText);
@@ -227,7 +214,7 @@ namespace KellermanSoftware.Common.Gui
 
             try
             {
-                this.ValidateChildren();
+                ValidateChildren();
 
                 if (epValidation.GetError(txtSteps).Length == 0)
                 {
@@ -236,31 +223,22 @@ namespace KellermanSoftware.Common.Gui
                     {
                         TryLink(myErrorInformation.GetManualEmailMessage());
 
-                        //if (SendMapiMessage() == false)
-                        //{
-                        //    TryLink(myErrorInformation.GetManualEmailMessage());
-                        //}
-
                         return true;
                     }
-                    else
-                    {
-                        //Send using smtp server
-                        email.ServerName= myErrorInformation.SmtpServer; //"prod-mail.nc.customercenter.net";
-                        myErrorInformation.Steps = txtSteps.Text;
-                        body = myErrorInformation.GetXMLMessage();
-                        attachments += myErrorInformation.ScreenShot + ",";
-                        attachments += myErrorInformation.EventLogText + ",";
 
-                        email.SendMail(myErrorInformation.Email, myErrorInformation.SupportEmail, subject, body, attachments);
-                        return true;
-                    }
+                    //Send using smtp server
+                    email.ServerName= myErrorInformation.SmtpServer; 
+                    myErrorInformation.Steps = txtSteps.Text;
+                    body = myErrorInformation.GetXMLMessage();
+                    attachments += myErrorInformation.ScreenShot + ",";
+                    attachments += myErrorInformation.EventLogText + ",";
+
+                    email.SendMail(myErrorInformation.Email, myErrorInformation.SupportEmail, subject, body, attachments);
+                    return true;
                 }
-                else
-                {
-                    MessageBox.Show(this, epValidation.GetError(txtSteps), "Errors on Screen", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return false;
-                }
+
+                MessageBox.Show(this, epValidation.GetError(txtSteps), "Errors on Screen", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return false;
             }
             catch (Exception ex)
             {
@@ -281,20 +259,20 @@ namespace KellermanSoftware.Common.Gui
             {
                 if (bShow)
                 {
-                    this.Height = 648;
+                    Height = 648;
                     grpErrorDetails.Visible = true;
-                    this.CenterToScreen();
+                    CenterToScreen();
                     btnShowDetails.Text = "Hide Details <<";
                 }
                 else
                 {
                     grpErrorDetails.Visible = false;
-                    this.Height = 295;
-                    this.CenterToScreen();
+                    Height = 295;
+                    CenterToScreen();
                     btnShowDetails.Text = "Show Details >>";
                 }
 
-                mbShowDetails = !bShow;
+                showDetails = !bShow;
             }
             catch (Exception ex)
             {
@@ -307,11 +285,11 @@ namespace KellermanSoftware.Common.Gui
 		#region Events
 
 		/// <summary>
-		/// Ensure the user entered someting intelligible
+		/// Ensure the user entered something intelligible
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void txtSteps_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		private void txtSteps_Validating(object sender, CancelEventArgs e)
 		{
 			string steps= txtSteps.Text.ToLower();
 
@@ -345,7 +323,7 @@ namespace KellermanSoftware.Common.Gui
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnSendError_Click(object sender, System.EventArgs e)
+		private void btnSendError_Click(object sender, EventArgs e)
 		{
             myErrorInformation.Steps = txtSteps.Text;
 
@@ -362,7 +340,7 @@ namespace KellermanSoftware.Common.Gui
             if (SendError())
             {
                 GuiException.MessageBoxErrorHandler = false;
-                this.Close();
+                Close();
             }
 		}
 
@@ -371,27 +349,27 @@ namespace KellermanSoftware.Common.Gui
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnDontSend_Click(object sender, System.EventArgs e)
+		private void btnDontSend_Click(object sender, EventArgs e)
 		{
             try
             {
-                if (System.IO.File.Exists(myErrorInformation.ScreenShot))
+                if (File.Exists(myErrorInformation.ScreenShot))
                 {
-                    System.IO.File.Delete(myErrorInformation.ScreenShot);
+                    File.Delete(myErrorInformation.ScreenShot);
                 }
 
-                if (System.IO.File.Exists(myErrorInformation.EventLogText))
+                if (File.Exists(myErrorInformation.EventLogText))
                 {
-                    System.IO.File.Delete(myErrorInformation.EventLogText);
+                    File.Delete(myErrorInformation.EventLogText);
                 }
 
                 GuiException.MessageBoxErrorHandler = false;
-                this.Close();
+                Close();
             }
             catch (Exception ex)
             {
                 GuiException.HandleException(ex);
-                this.Close();
+                Close();
             }
         }
 
@@ -400,7 +378,7 @@ namespace KellermanSoftware.Common.Gui
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void frmError_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		private void frmError_Closing(object sender, CancelEventArgs e)
 		{
             GuiException.MessageBoxErrorHandler = false;
 		}
@@ -410,9 +388,9 @@ namespace KellermanSoftware.Common.Gui
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnShowDetails_Click(object sender, System.EventArgs e)
+        private void btnShowDetails_Click(object sender, EventArgs e)
         {
-            ShowDetails(mbShowDetails);
+            ShowDetails(showDetails);
         }
 
         /// <summary>
@@ -420,9 +398,9 @@ namespace KellermanSoftware.Common.Gui
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void frmError_Load(object sender, System.EventArgs e)
+        private void frmError_Load(object sender, EventArgs e)
         {
-            ShowDetails(mbShowDetails);
+            ShowDetails(showDetails);
         }
 
         /// <summary>
@@ -502,18 +480,18 @@ namespace KellermanSoftware.Common.Gui
             // lblHeader
             // 
             this.lblHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHeader.Location = new System.Drawing.Point(54, 8);
+            this.lblHeader.Location = new System.Drawing.Point(65, 9);
             this.lblHeader.Name = "lblHeader";
-            this.lblHeader.Size = new System.Drawing.Size(328, 31);
+            this.lblHeader.Size = new System.Drawing.Size(393, 36);
             this.lblHeader.TabIndex = 0;
             this.lblHeader.Text = "An Error Has Occurred";
             // 
             // picYield
             // 
             this.picYield.Image = ((System.Drawing.Image)(resources.GetObject("picYield.Image")));
-            this.picYield.Location = new System.Drawing.Point(8, 6);
+            this.picYield.Location = new System.Drawing.Point(10, 7);
             this.picYield.Name = "picYield";
-            this.picYield.Size = new System.Drawing.Size(40, 40);
+            this.picYield.Size = new System.Drawing.Size(48, 46);
             this.picYield.TabIndex = 1;
             this.picYield.TabStop = false;
             // 
@@ -521,43 +499,43 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.lblApplicationName.Location = new System.Drawing.Point(3, 0);
             this.lblApplicationName.Name = "lblApplicationName";
-            this.lblApplicationName.Size = new System.Drawing.Size(94, 23);
+            this.lblApplicationName.Size = new System.Drawing.Size(112, 27);
             this.lblApplicationName.TabIndex = 2;
             this.lblApplicationName.Text = "Application Name:";
             this.lblApplicationName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblErrorType
             // 
-            this.lblErrorType.Location = new System.Drawing.Point(3, 100);
+            this.lblErrorType.Location = new System.Drawing.Point(3, 116);
             this.lblErrorType.Name = "lblErrorType";
-            this.lblErrorType.Size = new System.Drawing.Size(94, 23);
+            this.lblErrorType.Size = new System.Drawing.Size(112, 27);
             this.lblErrorType.TabIndex = 3;
             this.lblErrorType.Text = "Error:";
             this.lblErrorType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblProcedureName
             // 
-            this.lblProcedureName.Location = new System.Drawing.Point(3, 75);
+            this.lblProcedureName.Location = new System.Drawing.Point(3, 87);
             this.lblProcedureName.Name = "lblProcedureName";
-            this.lblProcedureName.Size = new System.Drawing.Size(94, 23);
+            this.lblProcedureName.Size = new System.Drawing.Size(112, 26);
             this.lblProcedureName.TabIndex = 4;
             this.lblProcedureName.Text = "Procedure Name:";
             this.lblProcedureName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblClassName
             // 
-            this.lblClassName.Location = new System.Drawing.Point(3, 50);
+            this.lblClassName.Location = new System.Drawing.Point(3, 58);
             this.lblClassName.Name = "lblClassName";
-            this.lblClassName.Size = new System.Drawing.Size(94, 23);
+            this.lblClassName.Size = new System.Drawing.Size(112, 26);
             this.lblClassName.TabIndex = 5;
             this.lblClassName.Text = "Class Name:";
             this.lblClassName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblStackTrace
             // 
-            this.lblStackTrace.Location = new System.Drawing.Point(3, 163);
+            this.lblStackTrace.Location = new System.Drawing.Point(3, 161);
             this.lblStackTrace.Name = "lblStackTrace";
-            this.lblStackTrace.Size = new System.Drawing.Size(94, 23);
+            this.lblStackTrace.Size = new System.Drawing.Size(112, 27);
             this.lblStackTrace.TabIndex = 6;
             this.lblStackTrace.Text = "Stack Trace:";
             this.lblStackTrace.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -565,48 +543,48 @@ namespace KellermanSoftware.Common.Gui
             // txtApplicationName
             // 
             this.txtApplicationName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtApplicationName.Location = new System.Drawing.Point(103, 3);
+            this.txtApplicationName.Location = new System.Drawing.Point(123, 3);
             this.txtApplicationName.Name = "txtApplicationName";
             this.txtApplicationName.ReadOnly = true;
-            this.txtApplicationName.Size = new System.Drawing.Size(391, 20);
+            this.txtApplicationName.Size = new System.Drawing.Size(371, 22);
             this.txtApplicationName.TabIndex = 7;
             // 
             // txtErrorMessage
             // 
             this.txtErrorMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtErrorMessage.Location = new System.Drawing.Point(103, 103);
+            this.txtErrorMessage.Location = new System.Drawing.Point(123, 119);
             this.txtErrorMessage.Multiline = true;
             this.txtErrorMessage.Name = "txtErrorMessage";
             this.txtErrorMessage.ReadOnly = true;
-            this.txtErrorMessage.Size = new System.Drawing.Size(391, 57);
+            this.txtErrorMessage.Size = new System.Drawing.Size(371, 39);
             this.txtErrorMessage.TabIndex = 8;
             // 
             // txtProcedureName
             // 
             this.txtProcedureName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtProcedureName.Location = new System.Drawing.Point(103, 78);
+            this.txtProcedureName.Location = new System.Drawing.Point(123, 90);
             this.txtProcedureName.Name = "txtProcedureName";
             this.txtProcedureName.ReadOnly = true;
-            this.txtProcedureName.Size = new System.Drawing.Size(391, 20);
+            this.txtProcedureName.Size = new System.Drawing.Size(371, 22);
             this.txtProcedureName.TabIndex = 9;
             // 
             // txtStack
             // 
             this.txtStack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtStack.Location = new System.Drawing.Point(103, 166);
+            this.txtStack.Location = new System.Drawing.Point(123, 164);
             this.txtStack.Multiline = true;
             this.txtStack.Name = "txtStack";
             this.txtStack.ReadOnly = true;
-            this.txtStack.Size = new System.Drawing.Size(391, 57);
+            this.txtStack.Size = new System.Drawing.Size(371, 39);
             this.txtStack.TabIndex = 10;
             // 
             // txtClassName
             // 
             this.txtClassName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtClassName.Location = new System.Drawing.Point(103, 53);
+            this.txtClassName.Location = new System.Drawing.Point(123, 61);
             this.txtClassName.Name = "txtClassName";
             this.txtClassName.ReadOnly = true;
-            this.txtClassName.Size = new System.Drawing.Size(391, 20);
+            this.txtClassName.Size = new System.Drawing.Size(371, 22);
             this.txtClassName.TabIndex = 11;
             // 
             // grpErrorDetails
@@ -616,7 +594,7 @@ namespace KellermanSoftware.Common.Gui
             this.grpErrorDetails.Location = new System.Drawing.Point(5, 5);
             this.grpErrorDetails.Name = "grpErrorDetails";
             this.grpErrorDetails.Padding = new System.Windows.Forms.Padding(5);
-            this.grpErrorDetails.Size = new System.Drawing.Size(507, 314);
+            this.grpErrorDetails.Size = new System.Drawing.Size(507, 278);
             this.grpErrorDetails.TabIndex = 14;
             this.grpErrorDetails.TabStop = false;
             this.grpErrorDetails.Text = "Details";
@@ -624,7 +602,7 @@ namespace KellermanSoftware.Common.Gui
             // pnlTableDetails
             // 
             this.pnlTableDetails.ColumnCount = 2;
-            this.pnlTableDetails.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.pnlTableDetails.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.pnlTableDetails.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.pnlTableDetails.Controls.Add(this.lblApplicationName, 0, 0);
             this.pnlTableDetails.Controls.Add(this.txtAdditionalInfo, 1, 6);
@@ -641,35 +619,35 @@ namespace KellermanSoftware.Common.Gui
             this.pnlTableDetails.Controls.Add(this.txtClassName, 1, 2);
             this.pnlTableDetails.Controls.Add(this.lblProcedureName, 0, 3);
             this.pnlTableDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTableDetails.Location = new System.Drawing.Point(5, 18);
+            this.pnlTableDetails.Location = new System.Drawing.Point(5, 20);
             this.pnlTableDetails.Name = "pnlTableDetails";
             this.pnlTableDetails.RowCount = 7;
-            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.pnlTableDetails.Size = new System.Drawing.Size(497, 291);
+            this.pnlTableDetails.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.pnlTableDetails.Size = new System.Drawing.Size(497, 253);
             this.pnlTableDetails.TabIndex = 18;
             // 
             // txtAdditionalInfo
             // 
             this.txtAdditionalInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtAdditionalInfo.Location = new System.Drawing.Point(103, 229);
+            this.txtAdditionalInfo.Location = new System.Drawing.Point(123, 209);
             this.txtAdditionalInfo.Multiline = true;
             this.txtAdditionalInfo.Name = "txtAdditionalInfo";
             this.txtAdditionalInfo.ReadOnly = true;
-            this.txtAdditionalInfo.Size = new System.Drawing.Size(391, 59);
+            this.txtAdditionalInfo.Size = new System.Drawing.Size(371, 41);
             this.txtAdditionalInfo.TabIndex = 12;
             // 
             // lblAdditional
             // 
-            this.lblAdditional.Location = new System.Drawing.Point(3, 226);
+            this.lblAdditional.Location = new System.Drawing.Point(3, 206);
             this.lblAdditional.Name = "lblAdditional";
-            this.lblAdditional.Size = new System.Drawing.Size(94, 23);
+            this.lblAdditional.Size = new System.Drawing.Size(112, 26);
             this.lblAdditional.TabIndex = 13;
             this.lblAdditional.Text = "Additional Info:";
             this.lblAdditional.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -677,17 +655,17 @@ namespace KellermanSoftware.Common.Gui
             // txtCulture
             // 
             this.txtCulture.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtCulture.Location = new System.Drawing.Point(103, 28);
+            this.txtCulture.Location = new System.Drawing.Point(123, 32);
             this.txtCulture.Name = "txtCulture";
             this.txtCulture.ReadOnly = true;
-            this.txtCulture.Size = new System.Drawing.Size(391, 20);
+            this.txtCulture.Size = new System.Drawing.Size(371, 22);
             this.txtCulture.TabIndex = 16;
             // 
             // lblCulture
             // 
-            this.lblCulture.Location = new System.Drawing.Point(3, 25);
+            this.lblCulture.Location = new System.Drawing.Point(3, 29);
             this.lblCulture.Name = "lblCulture";
-            this.lblCulture.Size = new System.Drawing.Size(94, 23);
+            this.lblCulture.Size = new System.Drawing.Size(112, 26);
             this.lblCulture.TabIndex = 17;
             this.lblCulture.Text = "Culture:";
             this.lblCulture.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -695,20 +673,20 @@ namespace KellermanSoftware.Common.Gui
             // lblSorry
             // 
             this.lblSorry.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSorry.Location = new System.Drawing.Point(3, 45);
+            this.lblSorry.Location = new System.Drawing.Point(3, 52);
             this.lblSorry.Name = "lblSorry";
             this.lblSorry.Padding = new System.Windows.Forms.Padding(5);
-            this.lblSorry.Size = new System.Drawing.Size(517, 60);
+            this.lblSorry.Size = new System.Drawing.Size(517, 69);
             this.lblSorry.TabIndex = 16;
             this.lblSorry.Text = resources.GetString("lblSorry.Text");
             // 
             // lblSteps
             // 
             this.lblSteps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSteps.Location = new System.Drawing.Point(3, 105);
+            this.lblSteps.Location = new System.Drawing.Point(3, 121);
             this.lblSteps.Name = "lblSteps";
             this.lblSteps.Padding = new System.Windows.Forms.Padding(5);
-            this.lblSteps.Size = new System.Drawing.Size(517, 26);
+            this.lblSteps.Size = new System.Drawing.Size(517, 30);
             this.lblSteps.TabIndex = 17;
             this.lblSteps.Text = "Please enter the steps to reproduce this error:";
             // 
@@ -719,27 +697,27 @@ namespace KellermanSoftware.Common.Gui
             // 
             // btnSendError
             // 
-            this.btnSendError.Location = new System.Drawing.Point(3, 5);
+            this.btnSendError.Location = new System.Drawing.Point(4, 6);
             this.btnSendError.Name = "btnSendError";
-            this.btnSendError.Size = new System.Drawing.Size(72, 23);
+            this.btnSendError.Size = new System.Drawing.Size(86, 26);
             this.btnSendError.TabIndex = 19;
             this.btnSendError.Text = "Send Error";
             this.btnSendError.Click += new System.EventHandler(this.btnSendError_Click);
             // 
             // btnDontSend
             // 
-            this.btnDontSend.Location = new System.Drawing.Point(81, 5);
+            this.btnDontSend.Location = new System.Drawing.Point(97, 6);
             this.btnDontSend.Name = "btnDontSend";
-            this.btnDontSend.Size = new System.Drawing.Size(72, 23);
+            this.btnDontSend.Size = new System.Drawing.Size(87, 26);
             this.btnDontSend.TabIndex = 20;
             this.btnDontSend.Text = "Don\'t Send";
             this.btnDontSend.Click += new System.EventHandler(this.btnDontSend_Click);
             // 
             // btnShowDetails
             // 
-            this.btnShowDetails.Location = new System.Drawing.Point(114, 5);
+            this.btnShowDetails.Location = new System.Drawing.Point(137, 6);
             this.btnShowDetails.Name = "btnShowDetails";
-            this.btnShowDetails.Size = new System.Drawing.Size(104, 23);
+            this.btnShowDetails.Size = new System.Drawing.Size(125, 26);
             this.btnShowDetails.TabIndex = 21;
             this.btnShowDetails.Text = "Show Details >>";
             this.btnShowDetails.Click += new System.EventHandler(this.btnShowDetails_Click);
@@ -758,11 +736,11 @@ namespace KellermanSoftware.Common.Gui
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.RowCount = 6;
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.pnlMain.Size = new System.Drawing.Size(523, 566);
             this.pnlMain.TabIndex = 22;
@@ -774,7 +752,7 @@ namespace KellermanSoftware.Common.Gui
             this.pnlTitle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlTitle.Location = new System.Drawing.Point(3, 3);
             this.pnlTitle.Name = "pnlTitle";
-            this.pnlTitle.Size = new System.Drawing.Size(517, 39);
+            this.pnlTitle.Size = new System.Drawing.Size(517, 46);
             this.pnlTitle.TabIndex = 23;
             // 
             // pnlButtons
@@ -785,11 +763,11 @@ namespace KellermanSoftware.Common.Gui
             this.pnlButtons.Controls.Add(this.pnlSendDontSend, 1, 0);
             this.pnlButtons.Controls.Add(this.pnlCopyToNotepad, 0, 0);
             this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlButtons.Location = new System.Drawing.Point(3, 189);
+            this.pnlButtons.Location = new System.Drawing.Point(3, 217);
             this.pnlButtons.Name = "pnlButtons";
             this.pnlButtons.RowCount = 1;
-            this.pnlButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.pnlButtons.Size = new System.Drawing.Size(517, 44);
+            this.pnlButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 58F));
+            this.pnlButtons.Size = new System.Drawing.Size(517, 52);
             this.pnlButtons.TabIndex = 24;
             // 
             // pnlSendDontSend
@@ -797,9 +775,9 @@ namespace KellermanSoftware.Common.Gui
             this.pnlSendDontSend.Controls.Add(this.btnDontSend);
             this.pnlSendDontSend.Controls.Add(this.btnSendError);
             this.pnlSendDontSend.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlSendDontSend.Location = new System.Drawing.Point(356, 3);
+            this.pnlSendDontSend.Location = new System.Drawing.Point(324, 3);
             this.pnlSendDontSend.Name = "pnlSendDontSend";
-            this.pnlSendDontSend.Size = new System.Drawing.Size(158, 44);
+            this.pnlSendDontSend.Size = new System.Drawing.Size(190, 52);
             this.pnlSendDontSend.TabIndex = 24;
             // 
             // pnlCopyToNotepad
@@ -809,14 +787,14 @@ namespace KellermanSoftware.Common.Gui
             this.pnlCopyToNotepad.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlCopyToNotepad.Location = new System.Drawing.Point(3, 3);
             this.pnlCopyToNotepad.Name = "pnlCopyToNotepad";
-            this.pnlCopyToNotepad.Size = new System.Drawing.Size(225, 44);
+            this.pnlCopyToNotepad.Size = new System.Drawing.Size(252, 52);
             this.pnlCopyToNotepad.TabIndex = 25;
             // 
             // btnNotepad
             // 
-            this.btnNotepad.Location = new System.Drawing.Point(3, 5);
+            this.btnNotepad.Location = new System.Drawing.Point(4, 6);
             this.btnNotepad.Name = "btnNotepad";
-            this.btnNotepad.Size = new System.Drawing.Size(105, 23);
+            this.btnNotepad.Size = new System.Drawing.Size(126, 26);
             this.btnNotepad.TabIndex = 23;
             this.btnNotepad.Text = "Copy to Notepad";
             this.btnNotepad.UseVisualStyleBackColor = true;
@@ -826,20 +804,20 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.pnlErrorDetails.Controls.Add(this.grpErrorDetails);
             this.pnlErrorDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlErrorDetails.Location = new System.Drawing.Point(3, 239);
+            this.pnlErrorDetails.Location = new System.Drawing.Point(3, 275);
             this.pnlErrorDetails.Name = "pnlErrorDetails";
             this.pnlErrorDetails.Padding = new System.Windows.Forms.Padding(5);
-            this.pnlErrorDetails.Size = new System.Drawing.Size(517, 324);
+            this.pnlErrorDetails.Size = new System.Drawing.Size(517, 288);
             this.pnlErrorDetails.TabIndex = 25;
             // 
             // pnlSteps
             // 
             this.pnlSteps.Controls.Add(this.txtSteps);
             this.pnlSteps.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlSteps.Location = new System.Drawing.Point(3, 134);
+            this.pnlSteps.Location = new System.Drawing.Point(3, 154);
             this.pnlSteps.Name = "pnlSteps";
             this.pnlSteps.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
-            this.pnlSteps.Size = new System.Drawing.Size(517, 49);
+            this.pnlSteps.Size = new System.Drawing.Size(517, 57);
             this.pnlSteps.TabIndex = 26;
             // 
             // txtSteps
@@ -850,13 +828,13 @@ namespace KellermanSoftware.Common.Gui
             this.txtSteps.Location = new System.Drawing.Point(0, 0);
             this.txtSteps.Multiline = true;
             this.txtSteps.Name = "txtSteps";
-            this.txtSteps.Size = new System.Drawing.Size(497, 49);
+            this.txtSteps.Size = new System.Drawing.Size(497, 57);
             this.txtSteps.TabIndex = 0;
             this.txtSteps.Validating += new System.ComponentModel.CancelEventHandler(this.txtSteps_Validating);
             // 
             // ErrorDialog
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 15);
             this.ClientSize = new System.Drawing.Size(523, 566);
             this.Controls.Add(this.pnlMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

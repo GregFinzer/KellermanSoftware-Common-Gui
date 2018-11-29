@@ -10,7 +10,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-
 namespace Win32Mapi
 {
 
@@ -270,7 +269,7 @@ public class Mapi
 	private const int MapiLongMsgID			= 0x00004000;
 
 	private StringBuilder	lastMsgID = new StringBuilder( 600 );
-	private string			findseed  = null;
+	private string			findseed;
 	#endregion
 
 
@@ -401,7 +400,7 @@ public class Mapi
 	private const int MapiReceiptReq	= 0x00000002;
 	private const int MapiSent			= 0x00000004;
 
-	private MapiMessage lastMsg = null;
+	private MapiMessage lastMsg;
 	#endregion
 
 
@@ -446,12 +445,12 @@ public class Mapi
 		{
 		if( error <= 26 )
 			return errors[ error ];
-		return "?unknown? [" + error.ToString() + "]";
+		return "?unknown? [" + error + "]";
 		}
 
-	private int error = 0;
+	private int error;
 
-	private readonly string[] errors	= new string[] {
+	private readonly string[] errors	= {
 		"OK [0]", "User abort [1]", "General MAPI failure [2]", "MAPI login failure [3]",
 		"Disk full [4]", "Insufficient memory [5]", "Access denied [6]", "-unknown- [7]",
 		"Too many sessions [8]", "Too many files were specified [9]", "Too many recipients were specified [10]", "A specified attachment was not found [11]",

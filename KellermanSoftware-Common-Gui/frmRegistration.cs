@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace KellermanSoftware.Common.Gui
 {
+    /// <summary>
+    /// Registration form
+    /// </summary>
     public partial class frmRegistration : Form
     {
         ILicenseInterface _licensingLibrary;
@@ -30,7 +29,7 @@ namespace KellermanSoftware.Common.Gui
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -43,7 +42,7 @@ namespace KellermanSoftware.Common.Gui
             if (_licensingLibrary.LicensedUser == false)
                 epValidation.SetError(txtLicenseKey, _licensingLibrary.AdditionalInfo);
             else
-                this.Close();
+                Close();
         }
     }
 }

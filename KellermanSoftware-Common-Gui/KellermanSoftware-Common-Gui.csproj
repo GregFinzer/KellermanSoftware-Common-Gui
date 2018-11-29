@@ -56,10 +56,14 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KellermanSoftware.Common, Version=1.11.0.0, Culture=neutral, PublicKeyToken=dccbd7ce7d6a58c0, processorArchitecture=MSIL">
+      <HintPath>..\packages\KellermanSoftware.Common.1.11.0\lib\net35\KellermanSoftware.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -119,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="mykeyfile.snk" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -136,12 +141,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\KellermanSoftware-Common\KellermanSoftware-Common\KellermanSoftware-Common.csproj">
-      <Project>{E4C5FB0D-445D-4704-9BE7-7D84685514BB}</Project>
-      <Name>KellermanSoftware-Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

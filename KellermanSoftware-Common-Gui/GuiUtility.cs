@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
-using System.ServiceProcess;
-using System.Diagnostics;
-using System.IO;
+using Microsoft.VisualBasic;
 
 namespace KellermanSoftware.Common.Gui
 {
+    /// <summary>
+    /// Utility methods for WinForm applications
+    /// </summary>
     public static class GuiUtility
     {
         /// <summary>
@@ -33,7 +38,7 @@ namespace KellermanSoftware.Common.Gui
         public static void LoadFormLocation(string thisWindowGeometry, Form formIn)
         {
             //Defaults if nothing is saved
-            if (string.IsNullOrEmpty(thisWindowGeometry) == true)
+            if (string.IsNullOrEmpty(thisWindowGeometry))
             {
                 formIn.Left = 100;
                 formIn.Top = 100;
@@ -56,14 +61,14 @@ namespace KellermanSoftware.Common.Gui
                 bool locOkay = IsBizarreLocation(windowPoint, windowSize);
                 bool sizeOkay = IsBizarreSize(windowSize);
 
-                if (locOkay == true && sizeOkay == true)
+                if (locOkay && sizeOkay)
                 {
                     formIn.Location = windowPoint;
                     formIn.Size = windowSize;
                     formIn.StartPosition = FormStartPosition.Manual;
                     formIn.WindowState = FormWindowState.Normal;
                 }
-                else if (sizeOkay == true)
+                else if (sizeOkay)
                 {
                     formIn.Size = windowSize;
                 }
@@ -111,21 +116,28 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         public static string SaveFormLocationToString(Form mainForm)
         {
-            return mainForm.Location.X.ToString() + "|" +
-                mainForm.Location.Y.ToString() + "|" +
-                mainForm.Size.Width.ToString() + "|" +
-                mainForm.Size.Height.ToString() + "|" +
-                mainForm.WindowState.ToString();
+            return mainForm.Location.X + "|" +
+                mainForm.Location.Y + "|" +
+                mainForm.Size.Width + "|" +
+                mainForm.Size.Height + "|" +
+                mainForm.WindowState;
         }
 
         #endregion
 
+        /// <summary>
+        /// Show an input box where the user can type text
+        /// </summary>
+        /// <param name="prompt">The prompt for the user</param>
+        /// <param name="title">The title for the form</param>
+        /// <param name="defaultResponse">The default response if no response is entered</param>
+        /// <returns></returns>
         public static string InputBox(string prompt, string title, string defaultResponse)
         {
             int widthCenter = Screen.PrimaryScreen.WorkingArea.Width/2;
             int heightCenter = Screen.PrimaryScreen.WorkingArea.Height/2;
 
-            return Microsoft.VisualBasic.Interaction.InputBox(prompt, title, defaultResponse, widthCenter, heightCenter);
+            return Interaction.InputBox(prompt, title, defaultResponse, widthCenter, heightCenter);
         }
 
         /// <summary>
@@ -135,7 +147,7 @@ namespace KellermanSoftware.Common.Gui
         /// <param name="box"></param>
         public static void PutListInListBox(List<string> list, ListBox box)
         {
-            box.Items.AddRange((object[]) list.ToArray());
+            box.Items.AddRange(list.ToArray());
         }
 
         /// <summary>
@@ -203,11 +215,11 @@ namespace KellermanSoftware.Common.Gui
         {
             string filePath = Path.GetTempFileName();
 
-            StreamWriter swOutput = new StreamWriter(filePath, true, System.Text.Encoding.ASCII);
+            StreamWriter swOutput = new StreamWriter(filePath, true, Encoding.ASCII);
             swOutput.WriteLine(displayText);
             swOutput.Close();
 
-            ProcessUtil.Shell("notepad.exe", filePath, System.Diagnostics.ProcessWindowStyle.Normal, false);
+            ProcessUtil.Shell("notepad.exe", filePath, ProcessWindowStyle.Normal, false);
 
             return filePath;
         }
@@ -219,8 +231,8 @@ namespace KellermanSoftware.Common.Gui
         /// <param name="txt">Text Box Control</param>
         /// <param name="description">The description to display, ie 'First Name'</param>
         /// <returns>True if filled in</returns>
-        public static bool epRequired(System.Windows.Forms.ErrorProvider ep,
-            System.Windows.Forms.TextBox txt,
+        public static bool epRequired(ErrorProvider ep,
+            TextBox txt,
             string description)
         {
             bool valid = true;
@@ -246,20 +258,20 @@ namespace KellermanSoftware.Common.Gui
         /// <param name="description"></param>
         /// <param name="required"></param>
         /// <returns></returns>
-        public static bool epValidSmtpServer(System.Windows.Forms.ErrorProvider ep,
-            System.Windows.Forms.TextBox txt,
+        public static bool epValidSmtpServer(ErrorProvider ep,
+            TextBox txt,
             string description,
             bool required)
         {
             string errorMessage = "";
             bool valid = true;
 
-            if (required == true)
+            if (required)
             {
                 valid = epRequired(ep, txt, description);
             }
 
-            if (valid == true && txt.Text.Length > 0)
+            if (valid && txt.Text.Length > 0)
             {
                 if (Validation.ValidSmtpServer(txt.Text) == false)
                 {
@@ -273,7 +285,7 @@ namespace KellermanSoftware.Common.Gui
                 }
             }
 
-            if (valid == true)
+            if (valid)
             {
                 ep.SetError(txt, "");
             }
@@ -289,20 +301,20 @@ namespace KellermanSoftware.Common.Gui
         /// <param name="description">The description of the text box, ie 'Home E-Mail'</param>
         /// <param name="required">Is the E-Mail Address Required?</param>
         /// <returns>True if valid</returns>
-        public static bool epValidEmail(System.Windows.Forms.ErrorProvider ep,
-            System.Windows.Forms.TextBox txt,
+        public static bool epValidEmail(ErrorProvider ep,
+            TextBox txt,
             string description,
             bool required)
         {
             string errorMessage = "";
             bool valid = true;
 
-            if (required == true)
+            if (required)
             {
                 valid = epRequired(ep, txt, description);
             }
 
-            if (valid == true && txt.Text.Length > 0)
+            if (valid && txt.Text.Length > 0)
             {
                 errorMessage = Validation.ValidEmail(txt.Text);
 
@@ -313,7 +325,7 @@ namespace KellermanSoftware.Common.Gui
                 }
             }
 
-            if (valid == true)
+            if (valid)
             {
                 ep.SetError(txt, "");
             }
@@ -343,8 +355,8 @@ namespace KellermanSoftware.Common.Gui
                     site = "http://www.google.com";
                 }
 
-                System.Net.WebRequest myRequest = System.Net.WebRequest.Create(site);
-                System.Net.WebResponse myResponse = myRequest.GetResponse();
+                WebRequest myRequest = WebRequest.Create(site);
+                WebResponse myResponse = myRequest.GetResponse();
                 myResponse.Close();
                 return true;
             }
@@ -354,7 +366,7 @@ namespace KellermanSoftware.Common.Gui
                 {
                     if (MessageBoxYesNo("Do you wish to connect to the internet?", "Connect?") == DialogResult.Yes)
                     {
-                        ProcessUtil.Shell("rundll32.exe", "shell32.dll,Control_RunDLL ncpa.cpl,,0", System.Diagnostics.ProcessWindowStyle.Normal, false);
+                        ProcessUtil.Shell("rundll32.exe", "shell32.dll,Control_RunDLL ncpa.cpl,,0", ProcessWindowStyle.Normal, false);
                     }
                 }
 
@@ -404,16 +416,19 @@ namespace KellermanSoftware.Common.Gui
             MessageBox.Show(sPrompt, sTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
+        /// <summary>
+        /// Copy the text of a file to the clipboard
+        /// </summary>
+        /// <param name="filePath"></param>
         public static void CopyFileToClipboard(string filePath)
         {
-            string fileText = System.IO.File.ReadAllText(filePath);
+            string fileText = File.ReadAllText(filePath);
             Clipboard.SetText(fileText);
         }
 
         /// <summary>
-        /// Takes a screen shot saves it to the specified directory and returns the full file path
+        /// Takes a screen shot into a temp file and returns the full file path
         /// </summary>
-        /// <param name="path"></param>
         /// <returns></returns>
         public static string ScreenShot()
         {
@@ -426,18 +441,18 @@ namespace KellermanSoftware.Common.Gui
                 SendKeys.SendWait("{PRTSC 2}");
 
                 IDataObject data = Clipboard.GetDataObject();
-                if (data.GetDataPresent(typeof(System.Drawing.Bitmap)))
+                if (data.GetDataPresent(typeof(Bitmap)))
                 {
-                    Image img = (System.Drawing.Bitmap)data.GetData(typeof(System.Drawing.Bitmap));
+                    Image img = (Bitmap)data.GetData(typeof(Bitmap));
 
-                    sourceTempFile = System.IO.Path.GetTempFileName();
+                    sourceTempFile = Path.GetTempFileName();
                     tempPath = FileUtil.ExtractPath(sourceTempFile);
 
-                    System.IO.File.Delete(sourceTempFile);
+                    File.Delete(sourceTempFile);
 
-                    sourceTempFile = System.IO.Path.Combine(tempPath, System.IO.Path.GetFileNameWithoutExtension(sourceTempFile) + ".jpg");
+                    sourceTempFile = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(sourceTempFile) + ".jpg");
 
-                    img.Save(sourceTempFile, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    img.Save(sourceTempFile, ImageFormat.Jpeg);
 
                     file = sourceTempFile;
                 }
@@ -452,8 +467,8 @@ namespace KellermanSoftware.Common.Gui
         /// <summary>
         /// Display a Yes/No Dialog with a question mark icon
         /// </summary>
-        /// <param name="sPrompt">Prompt message</param>
-        /// <param name="sTitle">Title to appear in the form</param>
+        /// <param name="prompt">Prompt message</param>
+        /// <param name="title">Title to appear in the form</param>
         /// <returns>Dialog Result</returns>
         public static DialogResult MessageBoxYesNo(string prompt, string title)
         {
@@ -475,6 +490,11 @@ namespace KellermanSoftware.Common.Gui
             MessageBox.Show(sPrompt, sTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        /// <summary>
+        /// Get the items out of a combo box into a string list
+        /// </summary>
+        /// <param name="cbo"></param>
+        /// <returns></returns>
         public static List<string> ComboToList(ComboBox cbo)
         {
             List<string> list =new List<string>();
@@ -486,6 +506,11 @@ namespace KellermanSoftware.Common.Gui
             return list;
         }
 
+        /// <summary>
+        /// Put the items from a string list into a combo box
+        /// </summary>
+        /// <param name="cbo"></param>
+        /// <param name="list"></param>
         public static void ListToCombo(ComboBox cbo, List<string> list)
         {
             cbo.Items.Clear();

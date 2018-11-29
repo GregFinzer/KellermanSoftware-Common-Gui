@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace KellermanSoftware.Common.Gui
 {
     partial class frmNag
@@ -5,7 +8,7 @@ namespace KellermanSoftware.Common.Gui
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -109,10 +112,10 @@ namespace KellermanSoftware.Common.Gui
 
         #endregion
 
-        private System.Windows.Forms.Label lblTrialMessage;
-        private System.Windows.Forms.Button btnTry;
-        private System.Windows.Forms.Button btnBuyNow;
-        private System.Windows.Forms.Button btnRegistration;
-        private System.Windows.Forms.Panel panelTop;
+        private Label lblTrialMessage;
+        private Button btnTry;
+        private Button btnBuyNow;
+        private Button btnRegistration;
+        private Panel panelTop;
     }
 }

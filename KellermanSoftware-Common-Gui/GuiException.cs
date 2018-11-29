@@ -1,27 +1,25 @@
 #region Using Statements
+
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
-using KellermanSoftware.Common;
+
 #endregion
 
 namespace KellermanSoftware.Common.Gui
 {
+    /// <summary>
+    /// Encapsulate exceptions in Winform applications
+    /// </summary>
     public static class GuiException
     {
         #region Class Variables
-        private static bool messageBoxErrorHandler = false;
-        private static int errorCount = 0;
-        private static int maxErrorCount=5;
-        private static int tempFilePurgeMinutes = 10;
-        private static string programName = "Unknown";
-        private static string previousError = string.Empty;
-        private static string supportEmail = "support@kellermansoftware.com";
-        private static string smtpServer = string.Empty;
-        private static string email = "noreply@kellermansoftware.com";    
-        private static string login = string.Empty;
-        private static string password = string.Empty;
-        private const string screenshotKey = "*KJ*&&^^%jkRgO0$!~[{8742nx|?JIL";
+
+        private static string _previousError = string.Empty;
+        private static string _email = "noreply@kellermansoftware.com";
+        private const string ScreenshotKey = "*KJ*&&^^%jkRgO0$!~[{8742nx|?JIL";
 
         #endregion
 
@@ -30,155 +28,47 @@ namespace KellermanSoftware.Common.Gui
         /// <summary>
         /// How often to delete temporary encrypted screen shots
         /// </summary>
-        public static int TempFilePurgeMinutes
-        {
-            get
-            {
-                return tempFilePurgeMinutes;
-            }
-
-            set
-            {
-                tempFilePurgeMinutes = value;
-            }
-        }
+        public static int TempFilePurgeMinutes { get; set; } = 10;
 
         /// <summary>
         /// The maximum number of errors before exiting the application
         /// </summary>
-        public static int MaxErrorCount
-        {
-            get
-            {
-                return maxErrorCount;
-            }
-
-            set
-            {
-                maxErrorCount = value;
-            }
-        }
+        public static int MaxErrorCount { get; set; } = 5;
 
         /// <summary>
         /// The support email to send errors to
         /// </summary>
-        public static string SupportEmail
-        {
-            get
-            {
-                return supportEmail;
-            }
-
-            set
-            {
-                supportEmail = value;
-            }
-        }
+        public static string SupportEmail { get; set; } = "support@kellermansoftware.com";
 
         /// <summary>
         /// Get/Set the general application name
         /// </summary>
-        public static string ProgramName
-        {
-            get
-            {
-                return programName;
-            }
-
-            set
-            {
-                programName = value;
-            }
-        }
+        public static string ProgramName { get; set; } = "Unknown";
 
         /// <summary>
         /// The number of errors that have occurred in this session
         /// </summary>
-        public static int ErrorCount
-        {
-            get
-            {
-                return errorCount;
-            }
-        }
+        public static int ErrorCount { get; private set; }
 
         /// <summary>
         /// The name of the SMTP server used to send email
         /// </summary>
-        public static string SmtpServer
-        {
-            get
-            {
-                return smtpServer;
-            }
-            set
-            {
-                smtpServer = value;
-            }
-        }
-
-        /// <summary>
-        /// The from email address of the sender
-        /// </summary>
-        public static string Email
-        {
-            get
-            {
-                return email;
-            }
-            set
-            {
-                email = value;
-            }
-        }
+        public static string SmtpServer { get; set; } = string.Empty;
 
         /// <summary>
         /// The login name for the SMTP Server
         /// </summary>
-        public static string Login
-        {
-            get
-            {
-                return login;
-            }
-            set
-            {
-                login = value;
-            }
-        }
+        public static string Login { get; set; } = string.Empty;
 
         /// <summary>
         /// The password for the SMTP Server
         /// </summary>
-        public static string Password
-        {
-            get
-            {
-                return password;
-            }
-            set
-            {
-                password = value;
-            }
-        }
+        public static string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// If true, a message box will be used instead of an Error Dialog Form
         /// </summary>
-        public static bool MessageBoxErrorHandler
-        {
-            get
-            {
-                return messageBoxErrorHandler;
-            }
-
-            set
-            {
-                messageBoxErrorHandler = value;
-            }
-        }
-
-
+        public static bool MessageBoxErrorHandler { get; set; }
 
         #endregion
 
@@ -192,10 +82,10 @@ namespace KellermanSoftware.Common.Gui
             try
             {
                 //Default to blank
-                smtpServer = string.Empty;
-                login = string.Empty;
-                password = string.Empty;
-                email = "noreply@kellermansoftware.com";
+                SmtpServer = string.Empty;
+                Login = string.Empty;
+                Password = string.Empty;
+                _email = "noreply@kellermansoftware.com";
             }
             catch
             {
@@ -242,36 +132,34 @@ namespace KellermanSoftware.Common.Gui
             try
             {
                 //Exit when we are past the maximum number of errors
-                if (errorCount >= maxErrorCount)
+                if (ErrorCount >= MaxErrorCount)
                 {
-                    message = programName + " has experienced a number of errors.\nPlease restart " + programName + ".";
-                    GuiUtility.MessageBoxCritical(message, "Restart " + programName);
+                    message = ProgramName + " has experienced a number of errors.\nPlease restart " + ProgramName + ".";
+                    GuiUtility.MessageBoxCritical(message, "Restart " + ProgramName);
                     Application.Exit();
                 }
 
                 //Ignore duplicate errors
                 currentError = ex.Message + ex.StackTrace;
 
-                if (currentError == previousError)
+                if (currentError == _previousError)
                 {
                     success = false;
                     return success; //We don't care if the same error happens over and over again
                 }
-                else
-                {
-                    errorCount++;
-                    previousError = currentError;
-                }
+
+                ErrorCount++;
+                _previousError = currentError;
 
 
                 CallingInfo callingInfo = ReflectionUtil.GetCallingInfo();
 
                 //Fill the error information object
-                errorInfo.ProgramName = programName;
-                errorInfo.SupportEmail = supportEmail;
-                errorInfo.SmtpServer = smtpServer;
-                errorInfo.Login = login;
-                errorInfo.Password = password;
+                errorInfo.ProgramName = ProgramName;
+                errorInfo.SupportEmail = SupportEmail;
+                errorInfo.SmtpServer = SmtpServer;
+                errorInfo.Login = Login;
+                errorInfo.Password = Password;
                 errorInfo.GUIException = ex;
                 errorInfo.AssemblyName = callingInfo.AssemblyName;
                 errorInfo.Version = callingInfo.AssemblyVersion;
@@ -282,16 +170,16 @@ namespace KellermanSoftware.Common.Gui
                 errorInfo.AdditionalInfo = additionalInfo;
 
                 //Log the event log
-                success &= SimpleLog.LogToEventLog(errorInfo.GetEventLogMessage(), System.Diagnostics.EventLogEntryType.Error, programName);
+                success &= SimpleLog.LogToEventLog(errorInfo.GetEventLogMessage(), EventLogEntryType.Error, ProgramName);
 
-                //Get an encrypted, compressed screen shot
-                errorInfo.ScreenShot = GetEncryptedCompressedScreenShot();
+                //Get a screen shot
+                errorInfo.ScreenShot = GuiUtility.ScreenShot();
 
                 //Save the event log to a text file and return the path
                 errorInfo.EventLogText = ReadFromEventLog();
 
                 //Show the giant error handling dialog
-                if (messageBoxErrorHandler== false)
+                if (MessageBoxErrorHandler== false)
                 {
                     ErrorDialog frmErrorDialog = new ErrorDialog(errorInfo);
                     frmErrorDialog.ShowDialog();
@@ -333,7 +221,7 @@ namespace KellermanSoftware.Common.Gui
         {
             const string defaultEventLog = "Application";
             EventLog elogger = new EventLog();
-            System.IO.StreamWriter swOutput=null;
+            StreamWriter swOutput=null;
             string filePath = string.Empty;
             string tempPath = string.Empty;
 
@@ -341,20 +229,20 @@ namespace KellermanSoftware.Common.Gui
             {
 
                 //Read from the program event log if it exists
-                if (EventLog.SourceExists(programName))
+                if (EventLog.SourceExists(ProgramName))
                 {
-                    elogger.Source = programName;
+                    elogger.Source = ProgramName;
                 }
                 else
                 {
                     elogger.Source = defaultEventLog;
                 }
 
-                filePath = System.IO.Path.GetTempFileName();
+                filePath = Path.GetTempFileName();
                 tempPath = FileUtil.ExtractPath(filePath);
-                filePath = System.IO.Path.Combine(tempPath,System.IO.Path.GetFileNameWithoutExtension(filePath) + ".txt");
+                filePath = Path.Combine(tempPath,Path.GetFileNameWithoutExtension(filePath) + ".txt");
 
-                swOutput = new System.IO.StreamWriter(filePath, true, System.Text.Encoding.ASCII);
+                swOutput = new StreamWriter(filePath, true, Encoding.ASCII);
 
                 foreach (EventLogEntry entry in elogger.Entries)
                 {
@@ -377,61 +265,7 @@ namespace KellermanSoftware.Common.Gui
             return filePath;
         }
 
-        /// <summary>
-        /// Capture a screen shot then encrypt and compress
-        /// </summary>
-        /// <returns></returns>
-        private static string GetEncryptedCompressedScreenShot()
-        {
-            string screenShot= string.Empty;
-            string compressedFile = string.Empty;
-            string encryptedFile = string.Empty;
-            string tempPath = string.Empty;
 
-            //Encryption myEncryption = new Encryption(Encryption.SymmProvEnum.Rijndael);
-
-            try
-            {
-                //return Utility.ScreenShot();
-
-                return GuiUtility.ScreenShot();
-                ////Get the screen shot
-                //screenShot = GuiUtility.ScreenShot();
-
-                ////Encrypt the file with Rijndael
-                //encryptedFile = System.IO.Path.GetTempFileName();
-
-                //if (System.IO.File.Exists(encryptedFile))
-                //{
-                //    System.IO.File.Delete(encryptedFile);
-                //}
-
-                //tempPath = u.ExtractPath(encryptedFile);
-                //encryptedFile = System.IO.Path.Combine(tempPath,System.IO.Path.GetFileNameWithoutExtension(encryptedFile) + ".jpg");
-
-                //myEncryption.EncryptFile(screenShot, encryptedFile, screenshotKey);
-
-                ////GZip compression makes the file larger
-                //////Compress the file with GZip
-                ////compressedFile = System.IO.Path.GetTempFileName();
-
-                ////if (System.IO.File.Exists(compressedFile))
-                ////{
-                ////    System.IO.File.Delete(compressedFile);
-                ////}
-
-                ////Utility.GZipCompressFile(encryptedFile, compressedFile);
-
-                ////Cleanup unencrypted temp files
-                //System.IO.File.Delete(screenShot);                
-
-                //return encryptedFile;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
 
         #endregion
 

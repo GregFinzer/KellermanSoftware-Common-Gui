@@ -1,8 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace KellermanSoftware.Common.Gui
 {
+    /// <summary>
+    /// Standard Nag form for trial users
+    /// </summary>
     public partial class frmNag : Form
     {
         private string _buyNowLink;
@@ -23,7 +27,7 @@ namespace KellermanSoftware.Common.Gui
 
         private void btnBuyNow_Click(object sender, EventArgs e)
         {
-            ProcessUtil.Shell(_buyNowLink, string.Empty, System.Diagnostics.ProcessWindowStyle.Maximized, false);
+            ProcessUtil.Shell(_buyNowLink, string.Empty, ProcessWindowStyle.Maximized, false);
         }
 
         private void btnRegistration_Click(object sender, EventArgs e)

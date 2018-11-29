@@ -1,10 +1,9 @@
 #region Includes
-using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
 
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 #endregion
 
@@ -16,21 +15,21 @@ namespace KellermanSoftware.Common.Gui
 	public class frmAbout :  Form
 	{
 		#region WinForm Controls
-		private System.Windows.Forms.Label lblProgramName;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.Label lblVersion;
-		private System.Windows.Forms.Label lblCopyright;
-        private System.Windows.Forms.Button btnOK;
-		private System.Windows.Forms.LinkLabel linkHomePage;
-		private System.Windows.Forms.LinkLabel linkSupport;
-		private System.Windows.Forms.GroupBox grpSales;
-        private System.Windows.Forms.LinkLabel linkSales;
-        private System.Windows.Forms.GroupBox grpSupport;
-		private System.Windows.Forms.Label lblSerial;
+		private Label lblProgramName;
+		private PictureBox pictureBox1;
+		private Label lblVersion;
+		private Label lblCopyright;
+        private Button btnOK;
+		private LinkLabel linkHomePage;
+		private LinkLabel linkSupport;
+		private GroupBox grpSales;
+        private LinkLabel linkSales;
+        private GroupBox grpSupport;
+		private Label lblSerial;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components = null;
 
 		#endregion
 
@@ -39,13 +38,13 @@ namespace KellermanSoftware.Common.Gui
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public frmAbout(string sProgramName, 
-			string sVersion, 
-			string sCompanyName, 
-			string sURL, 
-			string sSalesEMail,
-			string sSupportEMail,
-			string sLicenseStatus)
+		public frmAbout(string programName, 
+			string version, 
+			string companyName, 
+			string url, 
+			string salesEmail,
+			string supportEmail,
+			string licenseStatus)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -53,31 +52,31 @@ namespace KellermanSoftware.Common.Gui
 			InitializeComponent();
 
 			//Form Caption
-			this.Text= "About " + sProgramName + " by " + sCompanyName;
+			Text= "About " + programName + " by " + companyName;
 
 			//Title
-			lblProgramName.Text = sProgramName;
+			lblProgramName.Text = programName;
 
 			//Version
-			lblVersion.Text= sVersion;
+			lblVersion.Text= version;
 
 			//Copyright
-			string sCopyright="Copyright " + DateTime.Now.Year.ToString() + " " + sCompanyName + ".  ";
+			string sCopyright="Copyright " + DateTime.Now.Year + " " + companyName + ".  ";
 			sCopyright+= "All rights reserved.";
 			lblCopyright.Text= sCopyright;
 
-            lblSerial.Text = sLicenseStatus;
+            lblSerial.Text = licenseStatus;
 
 
 			//Sales
-			linkSales.Text= sSalesEMail;
-			linkSales.Links.Add(0,linkSales.Text.Length,"mailto:" + sSalesEMail);
+			linkSales.Text= salesEmail;
+			linkSales.Links.Add(0,linkSales.Text.Length,"mailto:" + salesEmail);
 
 			//Support
-			linkSupport.Text= sSupportEMail;
-			linkSupport.Links.Add(0,linkSupport.Text.Length,"mailto:" + sSupportEMail);
+			linkSupport.Text= supportEmail;
+			linkSupport.Links.Add(0,linkSupport.Text.Length,"mailto:" + supportEmail);
 		
-			linkHomePage.Links.Add(0,linkHomePage.Text.Length,sURL);
+			linkHomePage.Links.Add(0,linkHomePage.Text.Length,url);
 		
 		}
 
@@ -98,29 +97,29 @@ namespace KellermanSoftware.Common.Gui
 		#endregion
 
 		#region Events
-		private void linkHomePage_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+		private void linkHomePage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+			Process.Start(e.Link.LinkData.ToString());
 		}
 
-		private void linkEMail_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+		private void linkEMail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+			Process.Start(e.Link.LinkData.ToString());
 		}
 
-		private void btnOK_Click(object sender, System.EventArgs e)
+		private void btnOK_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
-		private void linkSales_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+		private void linkSales_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.Link.LinkData.ToString());		
+			Process.Start(e.Link.LinkData.ToString());		
 		}
 
-		private void linkFeedback_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+		private void linkFeedback_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.Link.LinkData.ToString());	
+			Process.Start(e.Link.LinkData.ToString());	
 		}
 
 		#endregion
@@ -154,9 +153,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.lblProgramName.BackColor = System.Drawing.Color.Transparent;
             this.lblProgramName.Font = new System.Drawing.Font("Times New Roman", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblProgramName.Location = new System.Drawing.Point(48, 16);
+            this.lblProgramName.Location = new System.Drawing.Point(58, 18);
             this.lblProgramName.Name = "lblProgramName";
-            this.lblProgramName.Size = new System.Drawing.Size(448, 56);
+            this.lblProgramName.Size = new System.Drawing.Size(537, 65);
             this.lblProgramName.TabIndex = 0;
             this.lblProgramName.Text = "lblProgramName";
             // 
@@ -164,9 +163,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(16, 28);
+            this.pictureBox1.Location = new System.Drawing.Point(19, 32);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 40);
+            this.pictureBox1.Size = new System.Drawing.Size(39, 46);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
@@ -174,9 +173,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.lblVersion.BackColor = System.Drawing.Color.Transparent;
             this.lblVersion.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVersion.Location = new System.Drawing.Point(56, 80);
+            this.lblVersion.Location = new System.Drawing.Point(67, 92);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(440, 23);
+            this.lblVersion.Size = new System.Drawing.Size(528, 27);
             this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "lblVersion";
             // 
@@ -184,18 +183,18 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.lblCopyright.BackColor = System.Drawing.Color.Transparent;
             this.lblCopyright.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCopyright.Location = new System.Drawing.Point(56, 104);
+            this.lblCopyright.Location = new System.Drawing.Point(67, 120);
             this.lblCopyright.Name = "lblCopyright";
-            this.lblCopyright.Size = new System.Drawing.Size(440, 24);
+            this.lblCopyright.Size = new System.Drawing.Size(528, 28);
             this.lblCopyright.TabIndex = 3;
             this.lblCopyright.Text = "lblCopyright";
             // 
             // linkHomePage
             // 
             this.linkHomePage.BackColor = System.Drawing.Color.Transparent;
-            this.linkHomePage.Location = new System.Drawing.Point(72, 287);
+            this.linkHomePage.Location = new System.Drawing.Point(86, 331);
             this.linkHomePage.Name = "linkHomePage";
-            this.linkHomePage.Size = new System.Drawing.Size(344, 23);
+            this.linkHomePage.Size = new System.Drawing.Size(413, 27);
             this.linkHomePage.TabIndex = 4;
             this.linkHomePage.TabStop = true;
             this.linkHomePage.Text = "Website";
@@ -203,9 +202,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             // linkSupport
             // 
-            this.linkSupport.Location = new System.Drawing.Point(16, 24);
+            this.linkSupport.Location = new System.Drawing.Point(19, 28);
             this.linkSupport.Name = "linkSupport";
-            this.linkSupport.Size = new System.Drawing.Size(416, 23);
+            this.linkSupport.Size = new System.Drawing.Size(499, 26);
             this.linkSupport.TabIndex = 5;
             this.linkSupport.TabStop = true;
             this.linkSupport.Text = "linkSupport";
@@ -213,9 +212,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(422, 313);
+            this.btnOK.Location = new System.Drawing.Point(506, 361);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(72, 24);
+            this.btnOK.Size = new System.Drawing.Size(87, 28);
             this.btnOK.TabIndex = 6;
             this.btnOK.Text = "&OK";
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -224,18 +223,18 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.grpSales.BackColor = System.Drawing.Color.Transparent;
             this.grpSales.Controls.Add(this.linkSales);
-            this.grpSales.Location = new System.Drawing.Point(56, 160);
+            this.grpSales.Location = new System.Drawing.Point(67, 185);
             this.grpSales.Name = "grpSales";
-            this.grpSales.Size = new System.Drawing.Size(440, 57);
+            this.grpSales.Size = new System.Drawing.Size(528, 65);
             this.grpSales.TabIndex = 7;
             this.grpSales.TabStop = false;
             this.grpSales.Text = "Sales";
             // 
             // linkSales
             // 
-            this.linkSales.Location = new System.Drawing.Point(16, 24);
+            this.linkSales.Location = new System.Drawing.Point(19, 28);
             this.linkSales.Name = "linkSales";
-            this.linkSales.Size = new System.Drawing.Size(416, 23);
+            this.linkSales.Size = new System.Drawing.Size(499, 26);
             this.linkSales.TabIndex = 8;
             this.linkSales.TabStop = true;
             this.linkSales.Text = "linkSales";
@@ -245,9 +244,9 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.grpSupport.BackColor = System.Drawing.Color.Transparent;
             this.grpSupport.Controls.Add(this.linkSupport);
-            this.grpSupport.Location = new System.Drawing.Point(56, 223);
+            this.grpSupport.Location = new System.Drawing.Point(67, 257);
             this.grpSupport.Name = "grpSupport";
-            this.grpSupport.Size = new System.Drawing.Size(440, 51);
+            this.grpSupport.Size = new System.Drawing.Size(528, 59);
             this.grpSupport.TabIndex = 8;
             this.grpSupport.TabStop = false;
             this.grpSupport.Text = "Support";
@@ -256,17 +255,17 @@ namespace KellermanSoftware.Common.Gui
             // 
             this.lblSerial.BackColor = System.Drawing.Color.Transparent;
             this.lblSerial.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSerial.Location = new System.Drawing.Point(56, 128);
+            this.lblSerial.Location = new System.Drawing.Point(67, 148);
             this.lblSerial.Name = "lblSerial";
-            this.lblSerial.Size = new System.Drawing.Size(440, 23);
+            this.lblSerial.Size = new System.Drawing.Size(528, 26);
             this.lblSerial.TabIndex = 10;
             this.lblSerial.Text = "lblSerial";
             // 
             // frmAbout
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(506, 347);
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 15);
+            this.ClientSize = new System.Drawing.Size(645, 423);
             this.Controls.Add(this.lblSerial);
             this.Controls.Add(this.grpSupport);
             this.Controls.Add(this.grpSales);

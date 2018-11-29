@@ -1,10 +1,11 @@
 #region Using Statements
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using System.IO;
+using System.Text;
 using System.Threading;
+using System.Xml;
+
 #endregion
 
 namespace KellermanSoftware.Common.Gui
@@ -16,11 +17,15 @@ namespace KellermanSoftware.Common.Gui
     {
         #region Class Variables
 
-        private const string messageBoxHeader = "An error has occurred\n";
-        private const string emailHeader = "Technical Support,\n\nPlease see the error below.\n\n";
-        private string notepadHeader = string.Empty;
-        private string mailtoHeader = string.Empty;
+        private const string MessageBoxHeader = "An error has occurred\n";
+        private const string EmailHeader = "Technical Support,\n\nPlease see the error below.\n\n";
+        private string _notepadHeader = string.Empty;
+        private string _mailtoHeader = string.Empty;
+        private const string CannotRetrieve = "Cannot retrieve";
 
+        /// <summary>
+        /// Public constructor
+        /// </summary>
         public ErrorInformation()
         {
             Steps = string.Empty;
@@ -40,17 +45,29 @@ namespace KellermanSoftware.Common.Gui
             ProcedureName = string.Empty;
         }
 
-        private const string cannotRetrieve = "Cannot retrieve";
+       
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// The Email Server
+        /// </summary>
         public string SmtpServer { get; set; }
 
+        /// <summary>
+        /// The from email address
+        /// </summary>
         public string Email { get; set; }
 
+        /// <summary>
+        /// The user name for logging into email
+        /// </summary>
         public string Login { get; set; }
 
+        /// <summary>
+        /// The password for logging into email
+        /// </summary>
         public string Password { get; set; }
 
         /// <summary>
@@ -60,7 +77,7 @@ namespace KellermanSoftware.Common.Gui
         {
             get
             {
-                return System.Threading.Thread.CurrentThread.CurrentCulture.EnglishName;
+                return Thread.CurrentThread.CurrentCulture.EnglishName;
             }
         }
 
@@ -77,7 +94,7 @@ namespace KellermanSoftware.Common.Gui
                 }
                 catch
                 {
-                    return System.Environment.UserName;
+                    return Environment.UserName;
                 }
             }
         }
@@ -89,7 +106,7 @@ namespace KellermanSoftware.Common.Gui
         {
             get
             {
-                return System.Environment.MachineName;
+                return Environment.MachineName;
             }
         }
 
@@ -100,7 +117,7 @@ namespace KellermanSoftware.Common.Gui
         {
             get
             {
-                return System.Environment.Version.ToString();
+                return Environment.Version.ToString();
             }
         }
 
@@ -129,6 +146,9 @@ namespace KellermanSoftware.Common.Gui
         /// </summary>
         public string AssemblyName { get; set; }
 
+        /// <summary>
+        /// The version of the assembly
+        /// </summary>
         public string AssemblyVersion { get; set; }
 
         /// <summary>
@@ -144,7 +164,7 @@ namespace KellermanSoftware.Common.Gui
         
 
         /// <summary>
-        /// Addittional Information to email to support
+        /// Additional Information to email to support
         /// </summary>
         public string AdditionalInfo { get; set; }
 
@@ -173,7 +193,7 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         private string BuildErrorMessage()
         {
-            System.Text.StringBuilder sb = new StringBuilder(4096);
+            StringBuilder sb = new StringBuilder(4096);
 
             sb.Append("Program Name:  ");
             sb.Append(ProgramName);
@@ -220,7 +240,7 @@ namespace KellermanSoftware.Common.Gui
             sb.Append("\n");
 
             sb.Append("Exception Type:  ");
-            sb.Append(GUIException.GetType().ToString());
+            sb.Append(GUIException.GetType());
             sb.Append("\n");
 
             sb.Append("Error Date:  ");
@@ -238,14 +258,14 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         private string GetSystemInformation()
         {
-            System.Text.StringBuilder sb = new StringBuilder(4096);
+            StringBuilder sb = new StringBuilder(4096);
 
             sb.Append("User Name:  ");
             sb.Append(UserName);
             sb.Append("\n");
 
             sb.Append("PC Name:  ");
-            sb.Append(System.Environment.MachineName);
+            sb.Append(Environment.MachineName);
             sb.Append("\n");
 
             sb.Append("Culture:  ");
@@ -265,15 +285,15 @@ namespace KellermanSoftware.Common.Gui
             sb.Append("\n");
 
             sb.Append("HD:  ");
-            sb.Append(SystemInfo.GetFreeSpace(System.IO.Path.GetPathRoot(System.Environment.CurrentDirectory)));
+            sb.Append(SystemInfo.GetFreeSpace(Path.GetPathRoot(Environment.CurrentDirectory)));
             sb.Append("\n");
 
             sb.Append("Framework:  ");
-            sb.Append(System.Environment.Version);
+            sb.Append(Environment.Version);
             sb.Append("\n");
 
             sb.Append("System Directory:  ");
-            sb.Append(System.Environment.SystemDirectory);
+            sb.Append(Environment.SystemDirectory);
             sb.Append("\n");
 
             sb.Append("Current Directory:  ");
@@ -364,7 +384,7 @@ namespace KellermanSoftware.Common.Gui
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("PCName", "");
-            textWriter.WriteString(System.Environment.MachineName);
+            textWriter.WriteString(Environment.MachineName);
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("Culture", "");
@@ -384,15 +404,15 @@ namespace KellermanSoftware.Common.Gui
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("HD", "");
-            textWriter.WriteString(SystemInfo.GetFreeSpace(System.IO.Path.GetPathRoot(System.Environment.CurrentDirectory)));
+            textWriter.WriteString(SystemInfo.GetFreeSpace(Path.GetPathRoot(Environment.CurrentDirectory)));
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("Framework", "");
-            textWriter.WriteString(System.Environment.Version.ToString());
+            textWriter.WriteString(Environment.Version.ToString());
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("SystemDirectory", "");
-            textWriter.WriteString(System.Environment.SystemDirectory);
+            textWriter.WriteString(Environment.SystemDirectory);
             textWriter.WriteEndElement();
 
             textWriter.WriteStartElement("CurrentDirectory", "");
@@ -408,7 +428,7 @@ namespace KellermanSoftware.Common.Gui
             // close writer
             textWriter.Close();
 
-            return System.Text.Encoding.ASCII.GetString(memStream.ToArray());
+            return Encoding.ASCII.GetString(memStream.ToArray());
         }
 
 
@@ -418,9 +438,9 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         public string GetMessageBoxMessage()
         {
-            System.Text.StringBuilder sb = new StringBuilder(4096);
+            StringBuilder sb = new StringBuilder(4096);
 
-            sb.Append(messageBoxHeader);
+            sb.Append(MessageBoxHeader);
             sb.Append(BuildErrorMessage());
             return sb.ToString();
         }
@@ -433,18 +453,18 @@ namespace KellermanSoftware.Common.Gui
         {
             const int maxHTMLGetOperationCharacters = 2083;
 
-            System.Text.StringBuilder sbBody = new StringBuilder(8112);
+            StringBuilder sbBody = new StringBuilder(8112);
             string message=string.Empty;
 
             BuildHeaders();
 
-            sbBody.Append(emailHeader);
+            sbBody.Append(EmailHeader);
             sbBody.Append(BuildErrorMessage());
             sbBody.Append(StringUtil.CharString(40, "-"));
-            sbBody.Append(System.Environment.NewLine);
+            sbBody.Append(Environment.NewLine);
             sbBody.Append(GetSystemInformation());
 
-            message = StringUtil.Left(mailtoHeader + StringUtil.URLEscape(sbBody.ToString().Replace("\n", "\r\n")), maxHTMLGetOperationCharacters);
+            message = StringUtil.Left(_mailtoHeader + StringUtil.URLEscape(sbBody.ToString().Replace("\n", "\r\n")), maxHTMLGetOperationCharacters);
             return message;
         }
 
@@ -454,7 +474,7 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         public string GetEventLogMessage()
         {
-            System.Text.StringBuilder sb = new StringBuilder(8112);
+            StringBuilder sb = new StringBuilder(8112);
 
             sb.Append(BuildErrorMessage());
             sb.Append(StringUtil.CharString(40, "-"));
@@ -470,11 +490,11 @@ namespace KellermanSoftware.Common.Gui
         /// <returns></returns>
         public string GetNotepadMessage()
         {
-            System.Text.StringBuilder sb = new StringBuilder(8112);
+            StringBuilder sb = new StringBuilder(8112);
 
             BuildHeaders();
 
-            sb.Append(notepadHeader);
+            sb.Append(_notepadHeader);
             sb.Append(BuildErrorMessage());
             sb.Append(StringUtil.CharString(40, "-"));
             sb.Append("\n");
@@ -494,8 +514,8 @@ namespace KellermanSoftware.Common.Gui
         /// </summary>
         private void BuildHeaders()
         {
-            notepadHeader = "Technical Support Email: " + SupportEmail + "\n\n" + emailHeader;
-            mailtoHeader = "mailto:" + SupportEmail + "?Subject=" + ProgramName + "%20Error&body=";
+            _notepadHeader = "Technical Support Email: " + SupportEmail + "\n\n" + EmailHeader;
+            _mailtoHeader = "mailto:" + SupportEmail + "?Subject=" + ProgramName + "%20Error&body=";
         }
 
         #endregion
