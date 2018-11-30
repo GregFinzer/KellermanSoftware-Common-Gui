@@ -23,27 +23,41 @@ namespace KellermanSoftware.Common.Gui
 
         #endregion
 
+        #region Constructor
+
+        static GuiException()
+        {
+            TempFilePurgeMinutes = 10;
+            MaxErrorCount = 5;
+            SupportEmail = "support@kellermansoftware.com";
+            ProgramName = "Unknown";
+            SmtpServer = string.Empty;
+            Login = string.Empty;
+            Password = string.Empty;
+        }
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// How often to delete temporary encrypted screen shots
         /// </summary>
-        public static int TempFilePurgeMinutes { get; set; } = 10;
+        public static int TempFilePurgeMinutes { get; set; }
 
         /// <summary>
         /// The maximum number of errors before exiting the application
         /// </summary>
-        public static int MaxErrorCount { get; set; } = 5;
+        public static int MaxErrorCount { get; set; }
 
         /// <summary>
         /// The support email to send errors to
         /// </summary>
-        public static string SupportEmail { get; set; } = "support@kellermansoftware.com";
+        public static string SupportEmail { get; set; }
 
         /// <summary>
         /// Get/Set the general application name
         /// </summary>
-        public static string ProgramName { get; set; } = "Unknown";
+        public static string ProgramName { get; set; }
 
         /// <summary>
         /// The number of errors that have occurred in this session
@@ -53,17 +67,17 @@ namespace KellermanSoftware.Common.Gui
         /// <summary>
         /// The name of the SMTP server used to send email
         /// </summary>
-        public static string SmtpServer { get; set; } = string.Empty;
+        public static string SmtpServer { get; set; } 
 
         /// <summary>
         /// The login name for the SMTP Server
         /// </summary>
-        public static string Login { get; set; } = string.Empty;
+        public static string Login { get; set; } 
 
         /// <summary>
         /// The password for the SMTP Server
         /// </summary>
-        public static string Password { get; set; } = string.Empty;
+        public static string Password { get; set; } 
 
         /// <summary>
         /// If true, a message box will be used instead of an Error Dialog Form
