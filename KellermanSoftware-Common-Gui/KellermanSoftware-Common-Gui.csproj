@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KellermanSoftware.Common.Gui</RootNamespace>
-    <AssemblyName>KellermanSoftware-Common-Gui</AssemblyName>
+    <AssemblyName>KellermanSoftware.Common-Gui</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>mykeyfile.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
@@ -44,7 +44,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\KellermanSoftware-Common-Gui.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\KellermanSoftware.Common-Gui.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -55,7 +55,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Release\KellermanSoftware-Common-Gui.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\KellermanSoftware.Common-Gui.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
