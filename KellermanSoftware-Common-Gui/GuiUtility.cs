@@ -417,6 +417,17 @@ namespace KellermanSoftware.Common.Gui
         }
 
         /// <summary>
+        /// Display a message box with an warning icon
+        /// </summary>
+        /// <param name="sPrompt">Prompt message</param>
+        /// <param name="sTitle">Title to appear in the form</param>
+        public static void MessageBoxWarning(string sPrompt, string sTitle)
+        {
+            Hourglass(false);
+            MessageBox.Show(sPrompt, sTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>
         /// Copy the text of a file to the clipboard
         /// </summary>
         /// <param name="filePath"></param>
@@ -475,6 +486,21 @@ namespace KellermanSoftware.Common.Gui
             DialogResult result;
             Hourglass(false);
             result = MessageBox.Show(prompt, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            Application.DoEvents();
+            return result;
+        }
+
+        /// <summary>
+        /// Display a Yes/No Dialog with a question mark icon
+        /// </summary>
+        /// <param name="prompt">Prompt message</param>
+        /// <param name="title">Title to appear in the form</param>
+        /// <returns>Dialog Result</returns>
+        public static DialogResult MessageBoxYesNoCancel(string prompt, string title)
+        {
+            DialogResult result;
+            Hourglass(false);
+            result = MessageBox.Show(prompt, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             Application.DoEvents();
             return result;
         }
