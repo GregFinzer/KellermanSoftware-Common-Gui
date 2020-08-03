@@ -187,7 +187,7 @@ namespace KellermanSoftware.Common.Gui
                 success &= SimpleLog.LogToEventLog(errorInfo.GetEventLogMessage(), EventLogEntryType.Error, ProgramName);
 
                 //Get a screen shot
-                errorInfo.ScreenShot = GuiUtility.ScreenShot();
+                //errorInfo.ScreenShot = GuiUtility.ScreenShot();
 
                 //Save the event log to a text file and return the path
                 errorInfo.EventLogText = ReadFromEventLog();

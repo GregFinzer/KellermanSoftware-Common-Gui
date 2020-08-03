@@ -444,15 +444,16 @@ namespace KellermanSoftware.Common.Gui
         public static string ScreenShot()
         {
             string file = string.Empty;
-            string tempPath = string.Empty;
-            string sourceTempFile = string.Empty;
+            string tempPath;
+            string sourceTempFile;
 
             try
             {
                 SendKeys.SendWait("{PRTSC 2}");
 
                 IDataObject data = Clipboard.GetDataObject();
-                if (data.GetDataPresent(typeof(Bitmap)))
+
+                if (data != null && data.GetDataPresent(typeof(Bitmap)))
                 {
                     Image img = (Bitmap)data.GetData(typeof(Bitmap));
 
